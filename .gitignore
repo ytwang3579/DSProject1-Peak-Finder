@@ -5,3 +5,6 @@ testcase/
 # output files
 *.peak
 *.exe
+
+# testcase
+*.data
