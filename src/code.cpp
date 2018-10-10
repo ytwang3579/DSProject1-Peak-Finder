@@ -1,5 +1,9 @@
 #include <iostream>
 #include <fstream>
+
+#define M (m+2)
+#define N (n+2)
+
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -19,27 +23,27 @@ int main(int argc, char* argv[])
     infile >> m >> n;
     cout << m << " " << n << '\n';
 
-    int matrix[m+2][n+2];
+    int matrix[M*N];
 
 // set edges to be INT32_MIN
     for(int i=0; i<=m+1; i++){
-        matrix[i][0] = matrix[i][n+1] = INT32_MIN;
+        matrix[i*N] = matrix[i*N+N-1] = INT32_MIN; //matrix[i][0] matrix[i][n+1]
     }
     for(int i=1; i<=n; i++){
-        matrix[0][i] = matrix[m+1][i] = INT32_MIN;
+        matrix[i] = matrix[(M-1)*N+i] = INT32_MIN; //matrix[0][i] matrix[m+1][i]
     }
 
 // read input to matrix
     for(int i=1; i<=m; i++){
         for(int j=1; j<=n; j++){
-            infile >> matrix[i][j];
+            infile >> matrix[i*N+j];
         }
     }
 
 // print matrix
     for(int i=1; i<=m; i++){
         for(int j=1; j<=n; j++){
-            outfile << matrix[i][j] << " ";
+            outfile << matrix[i*N+j] << " ";
         }
         outfile << '\n';        
     }
