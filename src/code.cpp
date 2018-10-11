@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <sstream>
 #include <fstream>
 #include <vector>
 #include <chrono>
@@ -11,7 +13,7 @@ using namespace std;
 using namespace std::chrono;
 ofstream outfile("final.peak");
 
-int findpeak_naive(const vector<int>& matrix, const int m, const int n) //O(m*n)
+int findpeak1(const vector<int>& matrix, const int m, const int n) //O(m*n)
 {
     vector<int> peakcnt_i, peakcnt_j;
     for(int i=1; i<=m; i++){
@@ -32,7 +34,7 @@ int findpeak_naive(const vector<int>& matrix, const int m, const int n) //O(m*n)
     return peakcnt_i.size();
 }
 
-int findpeak(const vector<int>& matrix, const int m, const int n)
+int findpeak2(const vector<int>& matrix, const int m, const int n)
 {
     vector<int> peakcnt_i, peakcnt_j;
     bool notvalid[M*N] = {false};
@@ -72,7 +74,9 @@ int main(int argc, char* argv[])
         cout << "Input Error!!\n";
         return 1;
     }
-    ifstream infile(argv[1]);
+    stringstream str;
+    str << "./" << argv[1] << "/matrix.data";
+    ifstream infile(str.str());
     if(!infile){
         cout << "Cannot open file!!\n";
         return 1;
@@ -95,19 +99,19 @@ int main(int argc, char* argv[])
 // read input to matrix
     for(int i=1; i<=m; i++){
         for(int j=1; j<=n; j++){
-            infile >> matrix[i*N+j];
+            infile >> matrix[TARGET];
         }
     }
 
     auto start = high_resolution_clock::now();
-    int naive_cnt = findpeak_naive(matrix, m, n);
+    int naive_cnt = findpeak1(matrix, m, n);
     auto end = high_resolution_clock::now();
 
     auto duration = duration_cast<microseconds>(end-start);
     cout << duration.count() << '\n';
 
     start = high_resolution_clock::now();
-    int cnt = findpeak(matrix, m, n);
+    int cnt = findpeak2(matrix, m, n);
     end = high_resolution_clock::now();
 
     duration = duration_cast<microseconds>(end-start);
@@ -119,7 +123,7 @@ int main(int argc, char* argv[])
 /*  //print matrix
     for(int i=1; i<=m; i++){
         for(int j=1; j<=n; j++){
-            outfile << matrix[i*N+j] << " ";
+            outfile << matrix[TARGET] << " ";
         }
         outfile << '\n';        
     }
