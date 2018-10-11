@@ -1,15 +1,17 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <chrono>
 
 #define M (m+2)
 #define N (n+2)
 #define TARGET (i*N+j)
 
 using namespace std;
+using namespace std::chrono;
 ofstream outfile("final.peak");
 
-void findpeak_naive(int matrix[], int m, int n)
+int findpeak_naive(int matrix[], int m, int n) //O(m*n)
 {
     vector<int> peakcnt_i, peakcnt_j;
     for(int i=1; i<=m; i++){
@@ -23,10 +25,44 @@ void findpeak_naive(int matrix[], int m, int n)
     }
     
     outfile << peakcnt_i.size() << '\n';
+    //cout << peakcnt_i.size() << '\n';
     for(int i=0; i<peakcnt_i.size(); i++){
         outfile << peakcnt_i[i] << " " << peakcnt_j[i] << '\n';
     }
-    
+    return peakcnt_i.size();
+}
+
+int findpeak(int matrix[], int m, int n)
+{
+    vector<int> peakcnt_i, peakcnt_j;
+    bool notvalid[M*N] = {false};
+    for(int i=1; i<=m; i++){
+        for(int j=1; j<=n; j++){
+/*
+            if(notvalid[TARGET]){
+                cout << "notvalid[" << i << "][" << j << "]!!\n";
+                continue;
+            }
+*/
+            if(matrix[TARGET]>=matrix[TARGET+1] && matrix[TARGET]>=matrix[TARGET-1]
+            && matrix[TARGET]>=matrix[TARGET+N] && matrix[TARGET]>=matrix[TARGET-N]){
+                
+                if(matrix[TARGET]>matrix[TARGET+1]) notvalid[TARGET+1] = true;
+                if(matrix[TARGET]>matrix[TARGET-1]) notvalid[TARGET-1] = true;
+                if(matrix[TARGET]>matrix[TARGET+N]) notvalid[TARGET+N] = true;
+                if(matrix[TARGET]>matrix[TARGET-N]) notvalid[TARGET-N] = true;
+                peakcnt_i.push_back(i);
+                peakcnt_j.push_back(j);
+            }
+        }
+    }
+
+    outfile << peakcnt_i.size() << '\n';
+    //cout << peakcnt_i.size() << '\n';
+    for(int i=0; i<peakcnt_i.size(); i++){
+        outfile << peakcnt_i[i] << " " << peakcnt_j[i] << '\n';
+    }
+    return peakcnt_i.size();
 }
 
 int main(int argc, char* argv[])
@@ -63,8 +99,23 @@ int main(int argc, char* argv[])
         }
     }
 
-    findpeak_naive(matrix, m, n);
-    
+    auto start = high_resolution_clock::now();
+    int naive_cnt = findpeak_naive(matrix, m, n);
+    auto end = high_resolution_clock::now();
+
+    auto duration = duration_cast<microseconds>(end-start);
+    cout << duration.count() << '\n';
+
+    start = high_resolution_clock::now();
+    int cnt = findpeak(matrix, m, n);
+    end = high_resolution_clock::now();
+
+    duration = duration_cast<microseconds>(end-start);
+    cout << duration.count() << '\n';
+
+    if(naive_cnt != cnt) cout << "ERROR\n";
+    else cout << "PASS\n";
+
 /*  //print matrix
     for(int i=1; i<=m; i++){
         for(int j=1; j<=n; j++){
