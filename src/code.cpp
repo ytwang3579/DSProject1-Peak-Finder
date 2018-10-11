@@ -11,7 +11,7 @@ using namespace std;
 using namespace std::chrono;
 ofstream outfile("final.peak");
 
-int findpeak_naive(int matrix[], int m, int n) //O(m*n)
+int findpeak_naive(const vector<int>& matrix, const int m, const int n) //O(m*n)
 {
     vector<int> peakcnt_i, peakcnt_j;
     for(int i=1; i<=m; i++){
@@ -32,7 +32,7 @@ int findpeak_naive(int matrix[], int m, int n) //O(m*n)
     return peakcnt_i.size();
 }
 
-int findpeak(int matrix[], int m, int n)
+int findpeak(const vector<int>& matrix, const int m, const int n)
 {
     vector<int> peakcnt_i, peakcnt_j;
     bool notvalid[M*N] = {false};
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
     infile >> m >> n;
     cout << m << " " << n << '\n';
 
-    int matrix[M*N];
+    vector<int> matrix(M*N);
 
 // set edges to be INT32_MIN
     for(int i=0; i<=m+1; i++){
