@@ -11,7 +11,7 @@
 
 using namespace std;
 using namespace std::chrono;
-ofstream outfile("final.peak");
+ofstream outfile;
 
 int findpeak1(const vector<int>& matrix, const int m, const int n) //O(m*n)
 {
@@ -75,7 +75,10 @@ int main(int argc, char* argv[])
         return 1;
     }
     stringstream str;
+    stringstream strout;
     str << "./" << argv[1] << "/matrix.data";
+    strout << "./" << argv[1] << "/output.peak";
+    outfile.open(strout.str());
     ifstream infile(str.str());
     if(!infile){
         cout << "Cannot open file!!\n";
@@ -102,7 +105,7 @@ int main(int argc, char* argv[])
             infile >> matrix[TARGET];
         }
     }
-
+/*
     auto start = high_resolution_clock::now();
     int naive_cnt = findpeak1(matrix, m, n);
     auto end = high_resolution_clock::now();
@@ -119,6 +122,9 @@ int main(int argc, char* argv[])
 
     if(naive_cnt != cnt) cout << "ERROR\n";
     else cout << "PASS\n";
+*/
+
+    int cnt = findpeak2(matrix, m, n);
 
 /*  //print matrix
     for(int i=1; i<=m; i++){
