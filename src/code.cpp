@@ -13,7 +13,7 @@ using namespace std;
 using namespace std::chrono;
 ofstream outfile;
 
-int findpeak1(const vector<int>& matrix, const int m, const int n) //O(m*n)
+void findpeak_naive(const vector<int>& matrix, const int m, const int n) //O(m*n)
 {
     vector<int> peakcnt_i, peakcnt_j;
     for(int i=1; i<=m; i++){
@@ -27,44 +27,11 @@ int findpeak1(const vector<int>& matrix, const int m, const int n) //O(m*n)
     }
     
     outfile << peakcnt_i.size() << '\n';
-    //cout << peakcnt_i.size() << '\n';
+    
     for(int i=0; i<peakcnt_i.size(); i++){
         outfile << peakcnt_i[i] << " " << peakcnt_j[i] << '\n';
     }
-    return peakcnt_i.size();
-}
-
-int findpeak2(const vector<int>& matrix, const int m, const int n)
-{
-    vector<int> peakcnt_i, peakcnt_j;
-    bool notvalid[M*N] = {false};
-    for(int i=1; i<=m; i++){
-        for(int j=1; j<=n; j++){
-/*
-            if(notvalid[TARGET]){
-                cout << "notvalid[" << i << "][" << j << "]!!\n";
-                continue;
-            }
-*/
-            if(matrix[TARGET]>=matrix[TARGET+1] && matrix[TARGET]>=matrix[TARGET-1]
-            && matrix[TARGET]>=matrix[TARGET+N] && matrix[TARGET]>=matrix[TARGET-N]){
-                
-                if(matrix[TARGET]>matrix[TARGET+1]) notvalid[TARGET+1] = true;
-                if(matrix[TARGET]>matrix[TARGET-1]) notvalid[TARGET-1] = true;
-                if(matrix[TARGET]>matrix[TARGET+N]) notvalid[TARGET+N] = true;
-                if(matrix[TARGET]>matrix[TARGET-N]) notvalid[TARGET-N] = true;
-                peakcnt_i.push_back(i);
-                peakcnt_j.push_back(j);
-            }
-        }
-    }
-
-    outfile << peakcnt_i.size() << '\n';
-    //cout << peakcnt_i.size() << '\n';
-    for(int i=0; i<peakcnt_i.size(); i++){
-        outfile << peakcnt_i[i] << " " << peakcnt_j[i] << '\n';
-    }
-    return peakcnt_i.size();
+    
 }
 
 int main(int argc, char* argv[])
@@ -77,17 +44,21 @@ int main(int argc, char* argv[])
     stringstream str;
     stringstream strout;
     str << "./" << argv[1] << "/matrix.data";
-    strout << "./" << argv[1] << "/output.peak";
+    strout << "./" << argv[1] << "/final.peak";
+
     outfile.open(strout.str());
     ifstream infile(str.str());
     if(!infile){
         cout << "Cannot open file!!\n";
         return 1;
     }
+    if(!outfile){
+        cout << "Cannot write file!!\n";
+        return 1;
+    }
 
     int m, n;
     infile >> m >> n;
-    cout << m << " " << n << '\n';
 
     vector<int> matrix(M*N);
 
@@ -105,34 +76,8 @@ int main(int argc, char* argv[])
             infile >> matrix[TARGET];
         }
     }
-/*
-    auto start = high_resolution_clock::now();
-    int naive_cnt = findpeak1(matrix, m, n);
-    auto end = high_resolution_clock::now();
 
-    auto duration = duration_cast<microseconds>(end-start);
-    cout << duration.count() << '\n';
+    findpeak_naive(matrix, m, n);
 
-    start = high_resolution_clock::now();
-    int cnt = findpeak2(matrix, m, n);
-    end = high_resolution_clock::now();
-
-    duration = duration_cast<microseconds>(end-start);
-    cout << duration.count() << '\n';
-
-    if(naive_cnt != cnt) cout << "ERROR\n";
-    else cout << "PASS\n";
-*/
-
-    int cnt = findpeak2(matrix, m, n);
-
-/*  //print matrix
-    for(int i=1; i<=m; i++){
-        for(int j=1; j<=n; j++){
-            outfile << matrix[TARGET] << " ";
-        }
-        outfile << '\n';        
-    }
-*/
     return 0;
 }

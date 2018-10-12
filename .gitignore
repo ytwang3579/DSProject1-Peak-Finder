@@ -1,6 +1,9 @@
 # Folders
 testcase/
 .vscode/
+10*/
+x*/
+TA*/
 
 # output files
 *.peak
