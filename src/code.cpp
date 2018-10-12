@@ -5,24 +5,77 @@
 #include <vector>
 #include <chrono>
 
-#define M (m+2)
+#define M 3
 #define N (n+2)
-#define TARGET (i*N+j)
+#define TARGET0 i
+#define TARGET1 (i+N)
+#define TARGET2 (i+N*2)
+
 
 using namespace std;
 using namespace std::chrono;
+ifstream infile;
 ofstream outfile;
 
-void findpeak_naive(const vector<int>& matrix, const int m, const int n) //O(m*n)
+void findpeak(vector<int>& matrix, const int m, const int n) //O(m*n)
 {
     vector<int> peakcnt_i, peakcnt_j;
-    for(int i=1; i<=m; i++){
-        for(int j=1; j<=n; j++){
-            if(matrix[TARGET]>=matrix[TARGET+1] && matrix[TARGET]>=matrix[TARGET-1]
-            && matrix[TARGET]>=matrix[TARGET+N] && matrix[TARGET]>=matrix[TARGET-N]){
-                peakcnt_i.push_back(i);
-                peakcnt_j.push_back(j);
+    int current_row[3] = {0, -2, -1};
+    int rowptr = 1;
+
+    //initialization
+    for(int i=1; i<=n; i++){
+        matrix[TARGET0] = INT32_MIN;
+        infile >> matrix[TARGET1];
+    }
+
+    while(current_row[(rowptr==0) ? 2 : (rowptr==1) ? 0 : 1]<m){
+        switch(rowptr){
+        case 0:
+            current_row[rowptr] += 3;
+
+            if(current_row[rowptr]!=m) for(int i=1; i<=n; i++) infile >> matrix[TARGET1];
+            else for(int i=1; i<=n; i++) matrix[TARGET1] = INT32_MIN;
+
+            for(int i=1; i<=n; i++){
+                if(matrix[TARGET0]>=matrix[TARGET0+1] && matrix[TARGET0]>=matrix[TARGET0-1]
+                && matrix[TARGET0]>=matrix[TARGET0+N] && matrix[TARGET0]>=matrix[TARGET0+2*N]){
+                    peakcnt_i.push_back(current_row[rowptr]);
+                    peakcnt_j.push_back(i);
+                }
             }
+            rowptr = 1;
+            break;
+        case 1:
+            current_row[rowptr] += 3;
+
+            if(current_row[rowptr]!=m) for(int i=1; i<=n; i++) infile >> matrix[TARGET2];
+            else for(int i=1; i<=n; i++) matrix[TARGET2] = INT32_MIN;
+
+            for(int i=1; i<=n; i++){
+                if(matrix[TARGET1]>=matrix[TARGET1+1] && matrix[TARGET1]>=matrix[TARGET1-1]
+                && matrix[TARGET1]>=matrix[TARGET1+N] && matrix[TARGET1]>=matrix[TARGET1-N]){
+                    peakcnt_i.push_back(current_row[rowptr]);
+                    peakcnt_j.push_back(i);
+                }
+            }
+            rowptr = 2;
+            break;
+        case 2:
+            current_row[rowptr] += 3;
+
+            if(current_row[rowptr]!=m) for(int i=1; i<=n; i++) infile >> matrix[TARGET0];
+            else for(int i=1; i<=n; i++) matrix[TARGET0] = INT32_MIN;
+
+            for(int i=1; i<=n; i++){
+                if(matrix[TARGET2]>=matrix[TARGET2+1] && matrix[TARGET2]>=matrix[TARGET2-1]
+                && matrix[TARGET2]>=matrix[TARGET2-N] && matrix[TARGET2]>=matrix[TARGET2-2*N]){
+                    peakcnt_i.push_back(current_row[rowptr]);
+                    peakcnt_j.push_back(i);
+                }
+            }
+            rowptr = 0;
+            break;
         }
     }
     
@@ -44,10 +97,11 @@ int main(int argc, char* argv[])
     stringstream str;
     stringstream strout;
     str << "./" << argv[1] << "/matrix.data";
-    strout << "./" << argv[1] << "/final.peak";
+    strout << "./" << argv[1] << "/final_eff.peak";
 
     outfile.open(strout.str());
-    ifstream infile(str.str());
+    infile.open(str.str());
+
     if(!infile){
         cout << "Cannot open file!!\n";
         return 1;
@@ -60,24 +114,15 @@ int main(int argc, char* argv[])
     int m, n;
     infile >> m >> n;
 
-    vector<int> matrix(M*N);
+    vector<int> matrix;
+    matrix.reserve(M*N);
 
-// set edges to be INT32_MIN
-    for(int i=0; i<=m+1; i++){
-        matrix[i*N] = matrix[i*N+N-1] = INT32_MIN; //matrix[i][0] matrix[i][n+1]
-    }
-    for(int i=1; i<=n; i++){
-        matrix[i] = matrix[(M-1)*N+i] = INT32_MIN; //matrix[0][i] matrix[m+1][i]
+    //set edges to be INT32_MIN
+    for(int i=0; i<3; i++){
+        matrix[i*N] = matrix[(i+1)*N-1] = INT32_MIN;
     }
 
-// read input to matrix
-    for(int i=1; i<=m; i++){
-        for(int j=1; j<=n; j++){
-            infile >> matrix[TARGET];
-        }
-    }
-
-    findpeak_naive(matrix, m, n);
+    findpeak(matrix, m, n);
 
     return 0;
 }
