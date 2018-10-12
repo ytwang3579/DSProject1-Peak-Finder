@@ -3,7 +3,6 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-#include <chrono>
 
 #define M 3
 #define N (n+2)
@@ -13,11 +12,10 @@
 
 
 using namespace std;
-using namespace std::chrono;
 ifstream infile;
 ofstream outfile;
 
-void findpeak(vector<int>& matrix, const int m, const int n) //O(m*n)
+void findpeak(vector<int>& matrix, const int m, const int n)
 {
     vector<int> peakcnt_i, peakcnt_j;
     int current_row[3] = {0, -2, -1};
@@ -89,7 +87,6 @@ void findpeak(vector<int>& matrix, const int m, const int n) //O(m*n)
 
 int main(int argc, char* argv[])
 {
-    
     if(argc != 2){
         cout << "Input Error!!\n";
         return 1;
@@ -97,7 +94,7 @@ int main(int argc, char* argv[])
     stringstream str;
     stringstream strout;
     str << "./" << argv[1] << "/matrix.data";
-    strout << "./" << argv[1] << "/final_eff.peak";
+    strout << "./" << argv[1] << "/final.peak";
 
     outfile.open(strout.str());
     infile.open(str.str());
